@@ -121,3 +121,13 @@ if archivo_gp and archivo_ax:
                         labels={'Categoria_Dias': 'Categoría de Días', 'Porcentaje': 'Porcentaje de Órdenes'},
                         title='Distribución Final de Órdenes', color='Categoria_Dias')
     st.plotly_chart(fig_final)
+
+    fecha_actual = datetime.now().strftime('%Y-%m-%d')
+    nombre_archivo = f"Reporte_{fecha_actual}.xlsx"
+    with pd.ExcelWriter(nombre_archivo, engine='openpyxl') as writer:
+        df_resumen.to_excel(writer, sheet_name='Resumen General', index=False)
+        df_combinado.to_excel(writer, sheet_name='Datos Combinados', index=False)
+        df_gp_no_unidas.to_excel(writer, sheet_name='Órdenes No Unidas', index=False)
+    
+    with open(nombre_archivo, "rb") as file:
+        st.download_button(label="📥 Descargar Reporte Excel", data=file, file_name=nombre_archivo, mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
