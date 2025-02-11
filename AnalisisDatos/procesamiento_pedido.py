@@ -112,7 +112,7 @@ if archivo_gp and archivo_ax:
                  color_discrete_map={"0 Días": "royalblue", "1 Día o más": "darkorange"})
     st.plotly_chart(fig)
     
-    st.subheader("📊 Ordenes por Origen")
+    st.subheader("📊 Tiempo entre GP vs AX")
     df_categoria_final = df_combinado['Categoria_Dias'].value_counts().reset_index()
     df_categoria_final.columns = ['Categoria_Dias', 'Cantidad']
     df_categoria_final['Porcentaje'] = (df_categoria_final['Cantidad'] / df_categoria_final['Cantidad'].sum()) * 100
