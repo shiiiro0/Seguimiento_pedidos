@@ -73,8 +73,13 @@ def procesar_datos(df_gp, df_ax):
 
 st.title("📊 Análisis de Pedidos entre GP y AX")
 
-archivo_gp = st.file_uploader("Sube el archivo GP ", type=['xlsx', 'csv'])
-archivo_ax = st.file_uploader("Sube el archivo AX ", type=['xlsx', 'csv'])
+st.markdown("<h3>📂 Sube el archivo GP </h3>", unsafe_allow_html=True)
+archivo_gp = st.file_uploader("", type=['xlsx', 'csv'], key="archivo_gp")
+
+st.markdown("<h3>📂 Sube el archivo AX </h3>", unsafe_allow_html=True)
+archivo_ax = st.file_uploader("", type=['xlsx', 'csv'], key="archivo_ax")
+
+
 
 if archivo_gp and archivo_ax:
     df_gp, df_ax = cargar_datos(archivo_gp, archivo_ax)
