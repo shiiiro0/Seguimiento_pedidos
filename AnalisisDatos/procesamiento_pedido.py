@@ -39,7 +39,7 @@ def procesar_datos(df_gp, df_ax):
     df_combinado['Fecha y hora de creación'] = pd.to_datetime(df_combinado['Fecha y hora de creación'], errors='coerce')
     df_combinado['Dias_entre_GP_y_AX'] = (df_combinado['Fecha y hora de creación'] - df_combinado['Fecha Trx']).dt.days.fillna(0).astype(int)
     df_combinado['Categoria_Dias'] = df_combinado['Dias_entre_GP_y_AX'].apply(lambda x: "0 Días" if x == 0 else "1 Día o más")
-    df_combinado = df_combinado[['Orden de Compra', 'Cantidad', 'Valor SKU Total', 'Fecha Trx', 'Fecha y hora de creación', 'Id de Origen', 'Pedido de ventas']]
+    df_combinado = df_combinado[['Orden de Compra', 'Cantidad', 'Valor SKU Total', 'Fecha Trx', 'Fecha y hora de creación', 'Id de Origen', 'Pedido de ventas', '','Dias_entre_GP_y_AX']]
     
     total_gp = len(df_gp)
     ordenes_gp_unicas = df_gp_num['Orden de Compra'].nunique()
@@ -99,31 +99,30 @@ if archivo_gp and archivo_ax:
     
     st.subheader("📊 Porcentaje de Pedidos en AX")
     fig_pie = px.pie(df_pie, values='Cantidad', names='Métrica',
-                     title='Órdenes Cruzadas vs No Cruzadas', hole=0.4,
-                     color_discrete_sequence=["darkorange", "royalblue"])  
+                     title='Órdenes Cruzadas vs No Cruzadas', hole=0.4)
     st.plotly_chart(fig_pie)
-
-    st.subheader("📊 Distribución de Órdenes por Tiempo entre GP y AX")
+    
+    st.subheader("📊 Distribucion de Ordenes por Tiempo entre GP y AX")
     df_filtrado = df_combinado[df_combinado["Id de Origen"].isin(["Vent.Verde", "Eco.Mag"])]
+    df_filtrado["Categoria_Dias"] = df_filtrado["Dias_entre_GP_y_AX"].apply(lambda x: "0 Días" if x == 0 else "1 Día o más")
     df_conteo_dias = df_filtrado.groupby(["Id de Origen", "Categoria_Dias"])['Orden de Compra'].count().reset_index()
     df_conteo_dias['Porcentaje'] = df_conteo_dias['Orden de Compra'] / df_conteo_dias.groupby('Id de Origen')['Orden de Compra'].transform('sum') * 100
-
+    
     fig = px.bar(df_conteo_dias, x="Id de Origen", y="Orden de Compra", color="Categoria_Dias",
                  title="Órdenes por Origen y Tiempo de Demora",
                  text=df_conteo_dias.apply(lambda row: f"{row['Orden de Compra']} ({row['Porcentaje']:.1f}%)", axis=1),
                  barmode="group", labels={"Orden de Compra": "Cantidad de Órdenes"},
-                 color_discrete_map={"0 Días": "royalblue", "1 Día o más": "darkorange"})  
+                 color_discrete_map={"0 Días": "royalblue", "1 Día o más": "darkorange"})
     st.plotly_chart(fig)
-
+    
     st.subheader("📊 Tiempo entre GP vs AX")
     df_categoria_final = df_combinado['Categoria_Dias'].value_counts().reset_index()
     df_categoria_final.columns = ['Categoria_Dias', 'Cantidad']
     df_categoria_final['Porcentaje'] = (df_categoria_final['Cantidad'] / df_categoria_final['Cantidad'].sum()) * 100
-
+    
     fig_final = px.bar(df_categoria_final, x='Categoria_Dias', y='Porcentaje', text=df_categoria_final.apply(lambda row: f"{row['Cantidad']} ({row['Porcentaje']:.2f}%)", axis=1),
                         labels={'Categoria_Dias': 'Categoría de Días', 'Porcentaje': 'Porcentaje de Órdenes'},
-                        title='Distribución Final de Órdenes', color='Categoria_Dias',
-                        color_discrete_map={"0 Días": "royalblue", "1 Día o más": "darkorange"})  
+                        title='Distribución Final de Órdenes', color='Categoria_Dias')
     st.plotly_chart(fig_final)
 
     fecha_actual = datetime.now().strftime('%Y-%m-%d')
