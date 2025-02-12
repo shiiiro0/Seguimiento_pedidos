@@ -39,7 +39,7 @@ def procesar_datos(df_gp, df_ax):
     df_combinado['Fecha y hora de creación'] = pd.to_datetime(df_combinado['Fecha y hora de creación'], errors='coerce')
     df_combinado['Dias_entre_GP_y_AX'] = (df_combinado['Fecha y hora de creación'] - df_combinado['Fecha Trx']).dt.days.fillna(0).astype(int)
     df_combinado['Categoria_Dias'] = df_combinado['Dias_entre_GP_y_AX'].apply(lambda x: "0 Días" if x == 0 else "1 Día o más")
-    df_combinado = df_combinado[['Orden de Compra', 'Cantidad', 'Valor SKU Total', 'Fecha Trx', 'Fecha y hora de creación', 'Id de Origen', 'Pedido de ventas','Dias_entre_GP_y_AX']]
+    df_combinado = df_combinado[['Orden de Compra', 'Cantidad', 'Valor SKU Total', 'Fecha Trx', 'Fecha y hora de creación', 'Id de Origen', 'Pedido de ventas','Categoria_Dias']]
     
     total_gp = len(df_gp)
     ordenes_gp_unicas = df_gp_num['Orden de Compra'].nunique()
